@@ -30,8 +30,10 @@
         0 0 25px rgba(129, 140, 248, 0.7),
         0 0 60px rgba(236, 72, 153, 0.4);
       padding: 20px 24px 24px;
-      max-width: 600px;
+      max-width: 520px;
       width: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     h1 {
@@ -158,17 +160,53 @@
       box-shadow: 0 0 8px rgba(74, 222, 128, 0.7);
     }
 
+    /* REKOR PANELİ (Tek kişilik için) */
+    .records-panel {
+      margin-top: 4px;
+      margin-bottom: 4px;
+      padding: 6px 8px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 11px;
+      max-height: 90px;
+      overflow-y: auto;
+    }
+
+    .records-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+      color: #bfdbfe;
+    }
+
+    .records-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .records-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 1px 0;
+      color: #e5e7eb;
+    }
+
+    .records-list li span:first-child {
+      opacity: 0.8;
+    }
+
     .grid-wrapper {
-      margin-top: 10px;
-      max-height: 460px;
+      margin-top: 8px;
+      flex: 1;
+      max-height: 520px;
       overflow-y: auto;
       padding-right: 4px;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(4, minmax(64px, 1fr));
+      gap: 10px;
     }
 
     .cell {
@@ -180,12 +218,12 @@
     .number-btn {
       position: absolute;
       inset: 0;
-      border-radius: 16px;
+      border-radius: 18px;
       border: 2px solid rgba(148, 163, 184, 0.8);
       background: radial-gradient(circle at top, #0f172a 0, #020617 55%);
       color: #e5e7eb;
-      font-size: 22px;
-      font-weight: 600;
+      font-size: 28px;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -355,15 +393,28 @@
     }
 
     @media (max-width: 540px) {
+      body {
+        align-items: stretch;
+      }
       .game-wrapper {
-        padding: 16px 14px 18px;
-        margin: 10px;
+        max-width: 100%;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
       }
       h1 {
         font-size: 23px;
       }
+      .subtitle {
+        font-size: 13px;
+      }
+      .grid {
+        grid-template-columns: repeat(3, minmax(80px, 1fr)); /* telefon için daha dikey ve büyük */
+      }
       .number-btn {
-        font-size: 18px;
+        font-size: 30px;
       }
     }
   </style>
@@ -443,6 +494,12 @@
     </div>
   </div>
 
+  <!-- Tek kişilik rekor listesi -->
+  <div id="records-panel" class="records-panel">
+    <div class="records-title">Rekorlarım (tek kişilik – bu mod)</div>
+    <ul id="records-list" class="records-list"></ul>
+  </div>
+
   <div class="grid-wrapper">
     <div id="grid" class="grid"></div>
   </div>
@@ -477,7 +534,9 @@
   const finishModeTextEl = document.getElementById("finish-mode-text");
   const playAgainBtn = document.getElementById("play-again-btn");
 
-  // Durum değişkenleri
+  const recordsPanel = document.getElementById("records-panel");
+  const recordsListEl = document.getElementById("records-list");
+
   let mode = "single"; // "single" | "two"
   let currentLimit = parseInt(limitSelect.value, 10);
   let currentStep = parseInt(stepSelect.value, 10);
@@ -488,16 +547,17 @@
   let timerInterval = null;
   let startTime = null;
 
-  // Tek kişilik rekorlar (limit+step'e göre)
   const BEST_KEY = "sayiArcadeBestTimes_v2";
   let bestTimes = {};
 
-  // Çift kişilik için oyuncular
+  const RECORDS_KEY = "sayiArcadeBestLists_v1";
+  let bestLists = {};
+
   let players = [
     { name: "Oyuncu 1", time: null },
     { name: "Oyuncu 2", time: null }
   ];
-  let currentPlayerIndex = 0; // 0 veya 1
+  let currentPlayerIndex = 0;
 
   // Ses sistemi
   let audioCtx = null;
@@ -534,7 +594,6 @@
   }
 
   function playApplause() {
-    // Hızlı küçük biplerle "alkış benzeri" bir efekt
     for (let i = 0; i < 25; i++) {
       const delay = i * 50;
       setTimeout(() => {
@@ -544,7 +603,6 @@
     }
   }
 
-  // Konfeti yıldızlar
   function triggerConfetti() {
     const container = document.createElement("div");
     container.className = "confetti-container";
@@ -587,7 +645,7 @@
     }
   }
 
-  // Rekorlar
+  // Depolar
   function loadBestTimes() {
     try {
       const raw = localStorage.getItem(BEST_KEY);
@@ -604,11 +662,27 @@
     } catch (e) {}
   }
 
+  function loadBestLists() {
+    try {
+      const raw = localStorage.getItem(RECORDS_KEY);
+      bestLists = raw ? JSON.parse(raw) : {};
+      if (typeof bestLists !== "object" || bestLists === null) bestLists = {};
+    } catch (e) {
+      bestLists = {};
+    }
+  }
+
+  function saveBestLists() {
+    try {
+      localStorage.setItem(RECORDS_KEY, JSON.stringify(bestLists));
+    } catch (e) {}
+  }
+
   function getModeKey(limit, step) {
     return limit + "-" + step;
   }
 
-  // Sıra üretme (ritmik sayma listesi)
+  // Sıra üretme
   function createSequence(limit, step) {
     const result = [];
     for (let n = step; n <= limit; n += step) {
@@ -617,7 +691,7 @@
     return result;
   }
 
-  // Grid kur
+  // Grid
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -653,29 +727,25 @@
   function handleNumberClick(btn) {
     if (!gameStarted) return;
 
-    getAudioContext(); // ses için ilk etkileşim
+    getAudioContext();
 
     const num = parseInt(btn.dataset.number, 10);
 
     if (num === currentNumber) {
-      // DOĞRU
       btn.classList.remove("wrong");
       btn.classList.add("correct");
       btn.style.pointerEvents = "none";
       playCorrectSound();
 
-      // İlk doğru ise süreyi başlat
       if (currentNumber === currentSequence[0] && !timerInterval) {
         startTimer();
       }
 
-      // Sıradaki sayıya geç
       const idx = currentSequence.indexOf(currentNumber);
       const nextIdx = idx + 1;
       currentNumber = currentSequence[nextIdx] ?? null;
       nextNumberEl.textContent = currentNumber ? currentNumber : "-";
 
-      // Bitti mi?
       if (!currentNumber) {
         gameStarted = false;
         stopTimer();
@@ -687,7 +757,6 @@
         }
       }
     } else {
-      // YANLIŞ
       btn.classList.remove("correct");
       btn.classList.add("wrong");
       playWrongSound();
@@ -695,6 +764,35 @@
         btn.classList.remove("wrong");
       }, 260);
     }
+  }
+
+  // Rekor listesi UI
+  function updateRecordsUI(limit, step) {
+    const key = getModeKey(limit, step);
+    const list = bestLists[key] || [];
+    recordsListEl.innerHTML = "";
+
+    if (!list.length) {
+      const li = document.createElement("li");
+      li.innerHTML = "<span>-</span><span>Henüz rekor yok</span>";
+      recordsListEl.appendChild(li);
+      return;
+    }
+
+    list.slice(0, 5).forEach((t, index) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<span>${index + 1}.</span><span>${t.toFixed(1)} sn</span>`;
+      recordsListEl.appendChild(li);
+    });
+  }
+
+  function addRecord(limit, step, time) {
+    const key = getModeKey(limit, step);
+    if (!bestLists[key]) bestLists[key] = [];
+    bestLists[key].push(time);
+    bestLists[key].sort((a, b) => a - b);
+    if (bestLists[key].length > 10) bestLists[key].length = 10;
+    saveBestLists();
   }
 
   // Tek kişilik bitiş
@@ -718,6 +816,10 @@
 
     bestTimeEl.textContent = oldBest ? oldBest.toFixed(1) + " sn" : "-";
 
+    // Kişisel rekor listesine ekle
+    addRecord(limit, step, totalSeconds);
+    updateRecordsUI(limit, step);
+
     finishTextEl.textContent = `Süre: ${totalSeconds.toFixed(1)} saniye`;
     if (isNewBest) {
       finishModeTextEl.innerHTML = `Tebrikler <span class="winner-name">${name}</span>! Yeni rekor kırdın! 🎉`;
@@ -738,13 +840,10 @@
     players[idx].time = totalSeconds;
 
     if (idx === 0) {
-      // 1. oyuncu bitti, şimdi 2. oyuna geç
       currentPlayerIndex = 1;
       playerLabelEl.textContent = players[1].name + " (2. Oyuncu)";
-      // İkinci oyuncu için sıfırla ve hemen yeni grid başlat
       prepareRunForCurrentPlayer();
     } else {
-      // 2. oyuncu da bitti, kazananı bul
       const t1 = players[0].time;
       const t2 = players[1].time;
 
@@ -757,7 +856,6 @@
         winnerHTML = "Berabere! 👏";
       }
 
-      // Her iki oyuncunun adı ve süresi satır satır görünsün
       finishTextEl.innerHTML =
         `1. Oyuncu: <strong>${players[0].name}</strong> – ${t1.toFixed(1)} sn<br>` +
         `2. Oyuncu: <strong>${players[1].name}</strong> – ${t2.toFixed(1)} sn`;
@@ -771,7 +869,6 @@
     }
   }
 
-  // Seçili oyuncu için yeni turu hazırla
   function prepareRunForCurrentPlayer() {
     stopTimer();
     timeEl.textContent = "0.0";
@@ -788,9 +885,7 @@
     gameStarted = true;
   }
 
-  // Yeni oyun / başlat
   function startNewMatch() {
-    // Modu oku
     const modeInput = document.querySelector('input[name="mode"]:checked');
     mode = modeInput ? modeInput.value : "single";
 
@@ -798,18 +893,19 @@
     currentStep = parseInt(stepSelect.value, 10);
 
     if (mode === "single") {
+      recordsPanel.style.display = "block";
       currentPlayerIndex = 0;
       const name = (player1Input.value || "Oyuncu").trim() || "Oyuncu";
       playerLabelEl.textContent = `${name} (Tek)`;
 
-      // Rekor göster
       const key = getModeKey(currentLimit, currentStep);
       const best = bestTimes[key] ?? null;
       bestTimeEl.textContent = best ? best.toFixed(1) + " sn" : "-";
 
+      updateRecordsUI(currentLimit, currentStep);
       prepareRunForCurrentPlayer();
     } else {
-      // İki kişilik
+      recordsPanel.style.display = "none";
       players[0].name = (player1Input.value || "Oyuncu 1").trim() || "Oyuncu 1";
       players[1].name = (player2Input.value || "Oyuncu 2").trim() || "Oyuncu 2";
       players[0].time = null;
@@ -817,13 +913,12 @@
 
       currentPlayerIndex = 0;
       playerLabelEl.textContent = `${players[0].name} (1. Oyuncu)`;
-      bestTimeEl.textContent = "-"; // Çift modda rekor yok, sadece yarış
+      bestTimeEl.textContent = "-";
 
       prepareRunForCurrentPlayer();
     }
   }
 
-  // Eventler
   startBtn.addEventListener("click", () => {
     finishedOverlay.style.display = "none";
     startNewMatch();
@@ -836,6 +931,9 @@
 
   // Başlangıç
   loadBestTimes();
+  loadBestLists();
+  recordsPanel.style.display = "block";
+  updateRecordsUI(currentLimit, currentStep);
   gridEl.innerHTML = "<div style='padding:12px'>Oyuna başlamak için BAŞLAT'a basın.</div>";
 </script>
 
