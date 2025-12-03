@@ -2,6 +2,10 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
   <title>Sayı Avcısı – Tek & Çift Kişilik</title>
   <style>
     * {
@@ -20,18 +24,20 @@
         radial-gradient(circle at top, #4f46e5 0, #020617 45%) fixed,
         radial-gradient(circle at bottom, #ec4899 0, #000000 50%) fixed;
       color: #e5e7eb;
+      overflow: hidden;
     }
 
     .game-wrapper {
-      background: rgba(15, 23, 42, 0.92);
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96) 0, rgba(2, 6, 23, 0.98) 60%);
       border-radius: 24px;
-      border: 2px solid rgba(129, 140, 248, 0.7);
+      border: 2px solid rgba(129, 140, 248, 0.9);
       box-shadow:
-        0 0 25px rgba(129, 140, 248, 0.7),
-        0 0 60px rgba(236, 72, 153, 0.4);
-      padding: 20px 24px 24px;
+        0 0 30px rgba(129, 140, 248, 0.8),
+        0 0 70px rgba(236, 72, 153, 0.5);
+      padding: 18px 20px 20px;
       max-width: 520px;
       width: 100%;
+      max-height: 720px;
       display: flex;
       flex-direction: column;
     }
@@ -40,33 +46,36 @@
       text-align: center;
       font-size: 28px;
       margin-bottom: 4px;
-      color: #f97316;
-      text-shadow: 0 0 12px rgba(249, 115, 22, 0.9);
+      color: #fde68a;
+      text-shadow:
+        0 0 10px rgba(250, 204, 21, 1),
+        0 0 22px rgba(249, 115, 22, 0.9);
       letter-spacing: 1px;
     }
 
     .subtitle {
       text-align: center;
-      font-size: 14px;
-      margin-bottom: 14px;
+      font-size: 13px;
+      margin-bottom: 12px;
       color: #e5e7eb;
       opacity: 0.85;
     }
 
     .settings {
       border-radius: 16px;
-      padding: 12px 14px;
+      padding: 10px 12px;
       background: radial-gradient(circle at top left, rgba(15, 23, 42, 1) 0, rgba(2, 6, 23, 0.9) 55%);
       border: 1px solid rgba(148, 163, 184, 0.7);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       font-size: 13px;
+      transition: opacity 0.2s ease, filter 0.2s ease;
     }
 
     .settings-row {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       align-items: center;
     }
 
@@ -109,7 +118,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-size: 13px;
       gap: 8px;
       flex-wrap: wrap;
@@ -138,12 +147,12 @@
     .btn {
       border: none;
       border-radius: 999px;
-      padding: 7px 16px;
+      padding: 7px 14px;
       background: linear-gradient(135deg, #22c55e, #a3e635);
       color: #022c22;
       font-weight: 700;
       cursor: pointer;
-      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease, opacity 0.15s ease;
       box-shadow: 0 0 14px rgba(74, 222, 128, 0.9);
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -160,70 +169,70 @@
       box-shadow: 0 0 8px rgba(74, 222, 128, 0.7);
     }
 
-    /* REKOR PANELİ (Tek kişilik için) */
-    .records-panel {
-      margin-top: 4px;
-      margin-bottom: 4px;
-      padding: 6px 8px;
-      border-radius: 12px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      font-size: 11px;
-      max-height: 90px;
-      overflow-y: auto;
+    .btn-small {
+      font-size: 10px;
+      padding: 5px 12px;
     }
 
-    .records-title {
-      font-weight: 600;
-      margin-bottom: 2px;
-      color: #bfdbfe;
-    }
-
-    .records-list {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    .records-list li {
+    /* Kilit butonu */
+    .icon-btn {
+      border: none;
+      border-radius: 999px;
+      width: 28px;
+      height: 28px;
       display: flex;
-      justify-content: space-between;
-      padding: 1px 0;
-      color: #e5e7eb;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #0ea5e9 0, #1d283a 70%);
+      color: #f9fafb;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+      font-size: 14px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
     }
 
-    .records-list li span:first-child {
-      opacity: 0.8;
+    .icon-btn:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 0 14px rgba(59, 130, 246, 1);
+    }
+
+    .icon-btn:active {
+      transform: translateY(1px) scale(0.95);
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
     }
 
     .grid-wrapper {
-      margin-top: 8px;
+      margin-top: 6px;
       flex: 1;
-      max-height: 520px;
+      max-height: 460px;
       overflow-y: auto;
-      padding-right: 4px;
+      padding-right: 3px;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(64px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+      gap: 8px;
+      align-items: stretch;
+      justify-items: stretch;
     }
 
     .cell {
       position: relative;
       width: 100%;
-      padding-top: 100%; /* kare */
+      aspect-ratio: 1 / 1; /* kare */
     }
 
     .number-btn {
       position: absolute;
       inset: 0;
       border-radius: 18px;
-      border: 2px solid rgba(148, 163, 184, 0.8);
-      background: radial-gradient(circle at top, #0f172a 0, #020617 55%);
-      color: #e5e7eb;
-      font-size: 28px;
-      font-weight: 700;
+      border: 2px solid rgba(248, 250, 252, 0.9);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(244, 114, 182, 1) 0, rgba(76, 29, 149, 1) 40%, rgba(15, 23, 42, 1) 80%);
+      color: #f9fafb;
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -235,24 +244,38 @@
         background 0.15s ease,
         opacity 0.28s ease;
       box-shadow:
-        0 0 8px rgba(148, 163, 184, 0.7),
+        0 0 12px rgba(244, 114, 182, 0.9),
+        0 0 28px rgba(59, 130, 246, 0.8),
         inset 0 0 10px rgba(15, 23, 42, 0.9);
+      text-shadow:
+        0 0 4px rgba(15, 23, 42, 1),
+        0 0 9px rgba(248, 250, 252, 0.9);
       user-select: none;
+    }
+
+    .number-btn:hover {
+      box-shadow:
+        0 0 16px rgba(244, 114, 182, 1),
+        0 0 32px rgba(59, 130, 246, 0.95);
+      transform: translateY(-1px) scale(1.01);
     }
 
     .number-btn:active {
       transform: translateY(2px) scale(0.96);
-      box-shadow: 0 0 6px rgba(148, 163, 184, 0.7);
+      box-shadow:
+        0 0 8px rgba(244, 114, 182, 0.8),
+        0 0 18px rgba(59, 130, 246, 0.7);
     }
 
     .number-btn.correct {
       animation: popOut 0.35s forwards;
-      background: radial-gradient(circle at top, #22c55e 0, #166534 60%);
+      background: radial-gradient(circle at top, #22c55e 0, #14532d 60%);
       border-color: #bbf7d0;
       box-shadow:
         0 0 18px rgba(74, 222, 128, 1),
         0 0 40px rgba(22, 163, 74, 0.9);
       color: #022c22;
+      text-shadow: none;
     }
 
     .number-btn.wrong {
@@ -263,9 +286,9 @@
         0 0 18px rgba(248, 113, 113, 1),
         0 0 32px rgba(185, 28, 28, 0.9);
       color: #fee2e2;
+      text-shadow: none;
     }
 
-    /* SONUÇ OVERLAY */
     .finished-overlay {
       position: fixed;
       inset: 0;
@@ -299,7 +322,7 @@
     .finished-card p {
       margin-bottom: 8px;
       font-size: 14px;
-      white-space: pre-line; /* \n varsa satır atla */
+      white-space: pre-line;
     }
 
     .big-emoji {
@@ -314,12 +337,6 @@
       margin-bottom: 8px;
     }
 
-    .btn-small {
-      font-size: 10px;
-      padding: 5px 12px;
-    }
-
-    /* KONFETİ YILDIZLAR */
     .confetti-container {
       position: fixed;
       inset: 0;
@@ -346,7 +363,6 @@
       }
     }
 
-    /* Kazanan ismin yanıp sönme efekti */
     @keyframes winner-blink {
       0%, 100% {
         opacity: 1;
@@ -392,9 +408,33 @@
       50% { transform: translateY(-7px); }
     }
 
+    /* KİLİTLİ MOD GÖRSELİ */
+    body.locked .settings {
+      opacity: 0.4;
+      filter: grayscale(0.4);
+    }
+
+    body.locked #start-btn {
+      opacity: 0.35;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    body.locked #start-btn:hover,
+    body.locked #start-btn:active {
+      filter: none;
+      transform: none;
+    }
+
+    body.locked .settings input,
+    body.locked .settings select {
+      pointer-events: none;
+    }
+
     @media (max-width: 540px) {
       body {
         align-items: stretch;
+        overflow: hidden;
       }
       .game-wrapper {
         max-width: 100%;
@@ -408,13 +448,13 @@
         font-size: 23px;
       }
       .subtitle {
-        font-size: 13px;
+        font-size: 12px;
       }
       .grid {
-        grid-template-columns: repeat(3, minmax(80px, 1fr)); /* telefon için daha dikey ve büyük */
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
       }
       .number-btn {
-        font-size: 30px;
+        font-size: clamp(24px, 5vw, 32px);
       }
     }
   </style>
@@ -474,7 +514,7 @@
     </div>
   </div>
 
-  <!-- Durum Çubukları + Başlat -->
+  <!-- Durum Çubuğu + Başlat + Kilit -->
   <div class="status-bar">
     <div class="status-pill">
       Sıradaki sayı: <span id="next-number">-</span>
@@ -482,7 +522,10 @@
     <div class="status-pill secondary">
       Aktif oyuncu: <span id="player-label">Yok</span>
     </div>
-    <button id="start-btn" class="btn">BAŞLAT</button>
+    <div style="display:flex; align-items:center; gap:6px;">
+      <button id="start-btn" class="btn">BAŞLAT</button>
+      <button id="lock-btn" class="icon-btn" title="Ekranı kilitle / kilidi aç">🔓</button>
+    </div>
   </div>
 
   <div class="status-bar">
@@ -494,12 +537,7 @@
     </div>
   </div>
 
-  <!-- Tek kişilik rekor listesi -->
-  <div id="records-panel" class="records-panel">
-    <div class="records-title">Rekorlarım (tek kişilik – bu mod)</div>
-    <ul id="records-list" class="records-list"></ul>
-  </div>
-
+  <!-- Oyun Alanı -->
   <div class="grid-wrapper">
     <div id="grid" class="grid"></div>
   </div>
@@ -523,6 +561,7 @@
   const bestTimeEl = document.getElementById("best-time");
   const playerLabelEl = document.getElementById("player-label");
   const startBtn = document.getElementById("start-btn");
+  const lockBtn = document.getElementById("lock-btn");
 
   const player1Input = document.getElementById("player1-name");
   const player2Input = document.getElementById("player2-name");
@@ -534,10 +573,7 @@
   const finishModeTextEl = document.getElementById("finish-mode-text");
   const playAgainBtn = document.getElementById("play-again-btn");
 
-  const recordsPanel = document.getElementById("records-panel");
-  const recordsListEl = document.getElementById("records-list");
-
-  let mode = "single"; // "single" | "two"
+  let mode = "single";
   let currentLimit = parseInt(limitSelect.value, 10);
   let currentStep = parseInt(stepSelect.value, 10);
   let currentSequence = [];
@@ -550,14 +586,13 @@
   const BEST_KEY = "sayiArcadeBestTimes_v2";
   let bestTimes = {};
 
-  const RECORDS_KEY = "sayiArcadeBestLists_v1";
-  let bestLists = {};
-
   let players = [
     { name: "Oyuncu 1", time: null },
     { name: "Oyuncu 2", time: null }
   ];
   let currentPlayerIndex = 0;
+
+  let isLocked = false;
 
   // Ses sistemi
   let audioCtx = null;
@@ -628,7 +663,6 @@
     }, 2800);
   }
 
-  // Zamanlayıcı
   function startTimer() {
     startTime = performance.now();
     timerInterval = setInterval(() => {
@@ -645,13 +679,12 @@
     }
   }
 
-  // Depolar
   function loadBestTimes() {
     try {
       const raw = localStorage.getItem(BEST_KEY);
       bestTimes = raw ? JSON.parse(raw) : {};
       if (typeof bestTimes !== "object" || bestTimes === null) bestTimes = {};
-    } catch (e) {
+    } catch {
       bestTimes = {};
     }
   }
@@ -659,30 +692,13 @@
   function saveBestTimes() {
     try {
       localStorage.setItem(BEST_KEY, JSON.stringify(bestTimes));
-    } catch (e) {}
-  }
-
-  function loadBestLists() {
-    try {
-      const raw = localStorage.getItem(RECORDS_KEY);
-      bestLists = raw ? JSON.parse(raw) : {};
-      if (typeof bestLists !== "object" || bestLists === null) bestLists = {};
-    } catch (e) {
-      bestLists = {};
-    }
-  }
-
-  function saveBestLists() {
-    try {
-      localStorage.setItem(RECORDS_KEY, JSON.stringify(bestLists));
-    } catch (e) {}
+    } catch {}
   }
 
   function getModeKey(limit, step) {
     return limit + "-" + step;
   }
 
-  // Sıra üretme
   function createSequence(limit, step) {
     const result = [];
     for (let n = step; n <= limit; n += step) {
@@ -691,7 +707,6 @@
     return result;
   }
 
-  // Grid
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -710,7 +725,7 @@
       return;
     }
 
-    let numbers = shuffle([...currentSequence]);
+    const numbers = shuffle([...currentSequence]);
     numbers.forEach(num => {
       const cell = document.createElement("div");
       cell.className = "cell";
@@ -766,36 +781,6 @@
     }
   }
 
-  // Rekor listesi UI
-  function updateRecordsUI(limit, step) {
-    const key = getModeKey(limit, step);
-    const list = bestLists[key] || [];
-    recordsListEl.innerHTML = "";
-
-    if (!list.length) {
-      const li = document.createElement("li");
-      li.innerHTML = "<span>-</span><span>Henüz rekor yok</span>";
-      recordsListEl.appendChild(li);
-      return;
-    }
-
-    list.slice(0, 5).forEach((t, index) => {
-      const li = document.createElement("li");
-      li.innerHTML = `<span>${index + 1}.</span><span>${t.toFixed(1)} sn</span>`;
-      recordsListEl.appendChild(li);
-    });
-  }
-
-  function addRecord(limit, step, time) {
-    const key = getModeKey(limit, step);
-    if (!bestLists[key]) bestLists[key] = [];
-    bestLists[key].push(time);
-    bestLists[key].sort((a, b) => a - b);
-    if (bestLists[key].length > 10) bestLists[key].length = 10;
-    saveBestLists();
-  }
-
-  // Tek kişilik bitiş
   function handleSingleFinish(totalSeconds) {
     if (isNaN(totalSeconds)) return;
 
@@ -816,10 +801,6 @@
 
     bestTimeEl.textContent = oldBest ? oldBest.toFixed(1) + " sn" : "-";
 
-    // Kişisel rekor listesine ekle
-    addRecord(limit, step, totalSeconds);
-    updateRecordsUI(limit, step);
-
     finishTextEl.textContent = `Süre: ${totalSeconds.toFixed(1)} saniye`;
     if (isNewBest) {
       finishModeTextEl.innerHTML = `Tebrikler <span class="winner-name">${name}</span>! Yeni rekor kırdın! 🎉`;
@@ -832,7 +813,6 @@
     finishedOverlay.style.display = "flex";
   }
 
-  // Çift kişilik bitiş
   function handleTwoFinish(totalSeconds) {
     if (isNaN(totalSeconds)) return;
 
@@ -886,6 +866,8 @@
   }
 
   function startNewMatch() {
+    if (isLocked) return;
+
     const modeInput = document.querySelector('input[name="mode"]:checked');
     mode = modeInput ? modeInput.value : "single";
 
@@ -893,7 +875,6 @@
     currentStep = parseInt(stepSelect.value, 10);
 
     if (mode === "single") {
-      recordsPanel.style.display = "block";
       currentPlayerIndex = 0;
       const name = (player1Input.value || "Oyuncu").trim() || "Oyuncu";
       playerLabelEl.textContent = `${name} (Tek)`;
@@ -902,10 +883,8 @@
       const best = bestTimes[key] ?? null;
       bestTimeEl.textContent = best ? best.toFixed(1) + " sn" : "-";
 
-      updateRecordsUI(currentLimit, currentStep);
       prepareRunForCurrentPlayer();
     } else {
-      recordsPanel.style.display = "none";
       players[0].name = (player1Input.value || "Oyuncu 1").trim() || "Oyuncu 1";
       players[1].name = (player2Input.value || "Oyuncu 2").trim() || "Oyuncu 2";
       players[0].time = null;
@@ -919,6 +898,13 @@
     }
   }
 
+  // Kilit butonu
+  lockBtn.addEventListener("click", () => {
+    isLocked = !isLocked;
+    document.body.classList.toggle("locked", isLocked);
+    lockBtn.textContent = isLocked ? "🔒" : "🔓";
+  });
+
   startBtn.addEventListener("click", () => {
     finishedOverlay.style.display = "none";
     startNewMatch();
@@ -929,11 +915,7 @@
     startNewMatch();
   });
 
-  // Başlangıç
   loadBestTimes();
-  loadBestLists();
-  recordsPanel.style.display = "block";
-  updateRecordsUI(currentLimit, currentStep);
   gridEl.innerHTML = "<div style='padding:12px'>Oyuna başlamak için BAŞLAT'a basın.</div>";
 </script>
 
